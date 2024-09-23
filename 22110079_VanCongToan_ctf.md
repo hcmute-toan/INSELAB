@@ -3,6 +3,7 @@
 # CTF LAB
 
 **_Stack frame of ctf.c_**
+
 ![image](https://github.com/user-attachments/assets/9f8c7534-94bb-474d-99e0-f14bd051847f)
 
 - Code command in `ctf.c` file
